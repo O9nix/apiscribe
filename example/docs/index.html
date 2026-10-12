@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="apiscribe 0.4.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example API</title>
+<style>:root {
+  --bg: #ffffff;
+  --panel: #f6f7f9;
+  --text: #1b1f24;
+  --muted: #6b7280;
+  --border: #e3e6ea;
+  --accent: #2563eb;
+  --code-bg: #f1f3f5;
+  --pre-bg: #0f172a;
+  --pre-text: #e2e8f0;
+  --get: #15803d;
+  --post: #2563eb;
+  --put: #b45309;
+  --patch: #0f766e;
+  --delete: #b91c1c;
+  --other: #6b7280;
+  --event: #7c3aed;
+  --add: #15803d;
+  --chg: #b45309;
+  --rem: #b91c1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --panel: #151a20;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: #262c34;
+    --accent: #60a5fa;
+    --code-bg: #1d232b;
+    --pre-bg: #0a0d11;
+    --pre-text: #dbe3ee;
+    --get: #4ade80;
+    --post: #60a5fa;
+    --put: #fbbf24;
+    --patch: #2dd4bf;
+    --delete: #f87171;
+    --other: #9ca3af;
+    --event: #a78bfa;
+    --add: #4ade80;
+    --chg: #fbbf24;
+    --rem: #f87171;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.layout { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
+.side {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--panel); border-right: 1px solid var(--border);
+  padding: 16px 12px 24px;
+}
+.brand { font-size: 17px; font-weight: 700; margin: 0 4px 12px; }
+.side select, .side input {
+  width: 100%; padding: 8px 10px; margin-bottom: 8px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg); color: var(--text); font: inherit;
+}
+.nav a.item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; border-radius: 6px; color: var(--text);
+}
+.nav a.item:hover { background: var(--code-bg); text-decoration: none; }
+.nav a.item.active { background: var(--accent); color: #fff; }
+.nav a.item.active .method { background: rgba(255,255,255,.22); color: #fff; }
+.nav .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav .label.dep { text-decoration: line-through; opacity: .7; }
+.nav details { margin-top: 6px; }
+.nav summary {
+  cursor: pointer; padding: 6px 8px; font-weight: 600; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+}
+.nav .top { margin-bottom: 4px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot.add { background: var(--add); }
+.dot.chg { background: var(--chg); }
+
+.method {
+  display: inline-block; min-width: 52px; text-align: center;
+  font: 700 10.5px/1 ui-monospace, Menlo, Consolas, monospace;
+  padding: 4px 6px; border-radius: 4px; color: #fff; flex: none; background: var(--other);
+}
+.m-GET { background: var(--get); }
+.m-POST { background: var(--post); }
+.m-PUT { background: var(--put); }
+.m-PATCH { background: var(--patch); }
+.m-DELETE { background: var(--delete); }
+/* Виды записей для библиотек (не HTTP): METHOD, EVENT, TYPE, PROP */
+.m-METHOD { background: var(--post); }
+.m-EVENT { background: var(--event); }
+.m-TYPE { background: var(--patch); }
+.m-PROP { background: var(--put); }
+@media (prefers-color-scheme: dark) { .method { color: #0b0e12; } }
+
+.main { padding: 32px 48px 80px; max-width: 980px; min-width: 0; }
+.main h1 { margin: 0 0 6px; font-size: 26px; }
+.main h2 { margin: 32px 0 10px; font-size: 18px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.main h3 { margin: 18px 0 8px; font-size: 14px; color: var(--muted); }
+.muted { color: var(--muted); }
+.urlbar {
+  display: flex; align-items: center; gap: 10px; margin: 10px 0 14px;
+  padding: 10px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+}
+.urlbar .method { font-size: 12px; padding: 5px 8px; }
+.urlbar code { background: none; font-size: 14px; padding: 0; word-break: break-all; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.tag {
+  display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 10px;
+  background: var(--code-bg); color: var(--muted); border: 1px solid var(--border);
+}
+.tag.add { color: var(--add); border-color: var(--add); }
+.tag.chg { color: var(--chg); border-color: var(--chg); }
+.tag.rem, .tag.dep { color: var(--rem); border-color: var(--rem); }
+.tag.req { color: var(--rem); }
+
+table.fields { width: 100%; border-collapse: collapse; margin: 6px 0 12px; }
+table.fields th, table.fields td {
+  text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border);
+}
+table.fields th { font-size: 12px; color: var(--muted); font-weight: 600; }
+table.fields td:first-child { white-space: nowrap; }
+.rich p { margin: 0 0 10px; }
+.rich ul { margin: 0 0 10px; padding-left: 20px; }
+.cell.rich p:last-child { margin-bottom: 0; }
+
+.example { margin: 10px 0 14px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.ex-head {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  background: var(--panel); font-size: 12px; color: var(--muted);
+}
+.ex-head .grow { flex: 1; }
+.example pre { margin: 0; padding: 12px 14px; background: var(--pre-bg); color: var(--pre-text); overflow-x: auto; }
+.example pre code { background: none; padding: 0; color: inherit; }
+button.copy {
+  font: inherit; font-size: 12px; padding: 2px 8px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 5px;
+}
+
+.changes ul { margin: 4px 0 12px; padding-left: 20px; }
+.changes .add { color: var(--add); }
+.changes .chg { color: var(--chg); }
+.changes .rem { color: var(--rem); }
+.changes h3 { margin: 10px 0 2px; }
+.card {
+  padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--panel); margin-bottom: 14px;
+}
+.vlist { display: flex; flex-wrap: wrap; gap: 6px; }
+.vlist a { padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px; font-size: 12px; }
+.vlist a.cur { background: var(--accent); color: #fff; border-color: var(--accent); }
+.source { margin-top: 28px; font-size: 12px; color: var(--muted); }
+
+.topbar { display: none; }
+@media (max-width: 900px) {
+  .layout { display: block; }
+  .topbar {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--border);
+  }
+  .topbar button { font: inherit; padding: 4px 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; }
+  .side { display: none; position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+  body.nav-open .side { display: block; }
+  .main { padding: 20px 16px 60px; }
+}
+
+/* ---- иерархия меню, группы, markdown ---- */
+.m-CLASS { background: var(--cls); }
+.m-NS { background: var(--ns); }
+:root { --cls: #0e7490; --ns: #475569; }
+@media (prefers-color-scheme: dark) { :root { --cls: #22d3ee; --ns: #94a3b8; } }
+
+.nrow { display: flex; align-items: center; }
+.nrow > a.item { flex: 1; min-width: 0; }
+.chev, .chev-sp { width: 18px; flex: none; }
+.chev {
+  border: 0; background: none; padding: 0; cursor: pointer; color: var(--muted);
+  font-size: 12px; line-height: 1; transition: transform .12s;
+}
+.chev.open { transform: rotate(90deg); }
+.nkids { margin-left: 9px; padding-left: 4px; border-left: 1px solid var(--border); }
+.nav a.item .method { min-width: 46px; font-size: 9.5px; padding: 3px 4px; }
+
+.crumbs { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+.crumbs a { color: var(--muted); }
+.crumbs strong { color: var(--text); font-weight: 600; }
+.doc-h1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 22px; }
+.doc-h1 .method { font-size: 11px; padding: 5px 8px; }
+code.sig { background: none; padding: 0; font-size: 1em; word-break: break-word; }
+
+.member { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--border); }
+.member-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-bottom: 0 !important; margin: 22px 0 8px !important; font-size: 17px !important; padding: 0 !important; }
+.member-h .method { font-size: 10px; padding: 4px 6px; }
+.permalink { margin-left: auto; font-size: 14px; color: var(--muted); }
+.member h3 { margin-top: 14px; }
+table.members td:first-child { white-space: normal; }
+
+.rich p { white-space: normal; }
+pre.md-pre {
+  margin: 8px 0 12px; padding: 12px 14px; border-radius: 8px; overflow-x: auto;
+  background: var(--pre-bg); color: var(--pre-text); line-height: 1.45;
+}
+pre.md-pre code { background: none; padding: 0; color: inherit; }
+.rich ol { margin: 0 0 10px; padding-left: 22px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="application/json" id="apiscribe-data">{"title":"Example API","lang":"ru","generatedAt":"2026-10-09T07:39:40.666Z","versions":[{"version":"1.0.0","date":"2026-10-07","updatedAt":"2026-10-07T02:19:02.139Z","endpoints":[{"key":"GET /orders","method":"GET","path":"/orders","title":"Список заказов","group":"Orders","description":"","since":null,"deprecated":null,"permissions":[],"params":{"header":[],"path":[],"query":[{"group":null,"type":"Number","name":"limit","optional":true,"description":"Сколько заказов вернуть","default":"20"},{"group":null,"type":"String","name":"status","optional":true,"description":"Фильтр по статусу"}],"body":[],"param":[]},"success":[{"group":null,"type":"Object[]","name":"orders","optional":false,"description":"Список заказов"},{"group":null,"type":"Number","name":"orders.id","optional":false,"description":"Идентификатор заказа"}],"error":[],"examples":[],"successExamples":[{"type":"json","title":"Успех","content":"{ \"orders\": [ { \"id\": 10 } ] }"}],"errorExamples":[],"source":{"file":"orders.py","line":3}},{"key":"POST /users","method":"POST","path":"/users","title":"Создать пользователя","group":"Users","description":"","since":null,"deprecated":null,"permissions":[],"params":{"header":[],"path":[],"query":[],"body":[{"group":null,"type":"String","name":"name","optional":false,"description":"Имя"},{"group":null,"type":"String","name":"email","optional":false,"description":"Почта"},{"group":null,"type":"String","name":"role","optional":true,"description":"Роль","default":"user"}],"param":[]},"success":[{"group":"201","type":"Number","name":"id","optional":false,"description":"Идентификатор нового пользователя"}],"error":[{"group":"400","type":"","name":"ValidationError","optional":false,"description":"Неверные данные"}],"examples":[],"successExamples":[],"errorExamples":[],"source":{"file":"users.js","line":28}},{"key":"DELETE /users/:id","method":"DELETE","path":"/users/:id","title":"Удалить пользователя","group":"Users","description":"","since":null,"deprecated":null,"permissions":[],"params":{"header":[],"path":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор пользователя"}],"query":[],"body":[],"param":[]},"success":[{"group":"204","type":"null","name":"-","optional":false,"description":"Пустой ответ"}],"error":[{"group":"404","type":"","name":"UserNotFound","optional":false,"description":"Пользователь с таким `id` не найден"}],"examples":[],"successExamples":[],"errorExamples":[{"type":"json","title":"Ответ 404","content":"{ \"error\": \"UserNotFound\" }"}],"source":{"file":"users.js","line":39}},{"key":"GET /users/:id","method":"GET","path":"/users/:id","title":"Получить пользователя","group":"Users","description":"Возвращает профиль пользователя по идентификатору.\n\nПоле `email` доступно только владельцу профиля.","since":null,"deprecated":null,"permissions":["user"],"params":{"header":[{"group":null,"type":"String","name":"Authorization","optional":false,"description":"Bearer-токен"}],"path":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор пользователя"}],"query":[],"body":[],"param":[]},"success":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор"},{"group":null,"type":"String","name":"name","optional":false,"description":"Имя"},{"group":null,"type":"String","name":"email","optional":true,"description":"Почта"}],"error":[{"group":"404","type":"","name":"UserNotFound","optional":false,"description":"Пользователь с таким `id` не найден"}],"examples":[{"type":"curl","title":"Пример запроса","content":"curl -H \"Authorization: Bearer TOKEN\" http://localhost:3000/users/1"}],"successExamples":[{"type":"json","title":"Успех","content":"{ \"id\": 1, \"name\": \"Анна\" }"}],"errorExamples":[{"type":"json","title":"Ответ 404","content":"{ \"error\": \"UserNotFound\" }"}],"source":{"file":"users.js","line":8}}],"changes":null},{"version":"1.1.0","date":"2026-10-07","updatedAt":"2026-10-07T02:19:13.484Z","endpoints":[{"key":"GET /orders","method":"GET","path":"/orders","title":"Список заказов","group":"Orders","description":"","since":null,"deprecated":null,"permissions":[],"params":{"header":[],"path":[],"query":[{"group":null,"type":"Number","name":"limit","optional":true,"description":"Сколько заказов вернуть","default":"20"},{"group":null,"type":"String","name":"status","optional":true,"description":"Фильтр по статусу"}],"body":[],"param":[]},"success":[{"group":null,"type":"Object[]","name":"orders","optional":false,"description":"Список заказов"},{"group":null,"type":"Number","name":"orders.id","optional":false,"description":"Идентификатор заказа"}],"error":[],"examples":[],"successExamples":[{"type":"json","title":"Успех","content":"{ \"orders\": [ { \"id\": 10 } ] }"}],"errorExamples":[],"source":{"file":"orders.py","line":3}},{"key":"POST /users","method":"POST","path":"/users","title":"Создать пользователя","group":"Users","description":"","since":null,"deprecated":null,"permissions":[],"params":{"header":[],"path":[],"query":[],"body":[{"group":null,"type":"String","name":"name","optional":false,"description":"Имя"},{"group":null,"type":"String","name":"email","optional":false,"description":"Почта"},{"group":null,"type":"String","name":"role","optional":true,"description":"Роль","default":"user"},{"group":null,"type":"String","name":"phone","optional":true,"description":"Телефон (добавлено в 1.1.0)"}],"param":[]},"success":[{"group":"201","type":"Number","name":"id","optional":false,"description":"Идентификатор нового пользователя"}],"error":[{"group":"400","type":"","name":"ValidationError","optional":false,"description":"Неверные данные"}],"examples":[],"successExamples":[],"errorExamples":[],"source":{"file":"users.js","line":28}},{"key":"GET /users/:id","method":"GET","path":"/users/:id","title":"Получить пользователя","group":"Users","description":"Возвращает профиль пользователя по идентификатору.\n\nПоле `email` доступно только владельцу профиля.","since":null,"deprecated":null,"permissions":["user"],"params":{"header":[{"group":null,"type":"String","name":"Authorization","optional":false,"description":"Bearer-токен"}],"path":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор пользователя"}],"query":[],"body":[],"param":[]},"success":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор"},{"group":null,"type":"String","name":"name","optional":false,"description":"Имя"},{"group":null,"type":"String","name":"email","optional":true,"description":"Почта"}],"error":[{"group":"404","type":"","name":"UserNotFound","optional":false,"description":"Пользователь с таким `id` не найден"}],"examples":[{"type":"curl","title":"Пример запроса","content":"curl -H \"Authorization: Bearer TOKEN\" http://localhost:3000/users/1"}],"successExamples":[{"type":"json","title":"Успех","content":"{ \"id\": 1, \"name\": \"Анна\" }"}],"errorExamples":[{"type":"json","title":"Ответ 404","content":"{ \"error\": \"UserNotFound\" }"}],"source":{"file":"users.js","line":8}},{"key":"PATCH /users/:id","method":"PATCH","path":"/users/:id","title":"Обновить пользователя","group":"Users","description":"","since":"1.1.0","deprecated":null,"permissions":[],"params":{"header":[],"path":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор пользователя"}],"query":[],"body":[{"group":null,"type":"String","name":"name","optional":true,"description":"Новое имя"}],"param":[]},"success":[{"group":null,"type":"Number","name":"id","optional":false,"description":"Идентификатор"}],"error":[{"group":"404","type":"","name":"UserNotFound","optional":false,"description":"Пользователь с таким `id` не найден"}],"examples":[],"successExamples":[],"errorExamples":[{"type":"json","title":"Ответ 404","content":"{ \"error\": \"UserNotFound\" }"}],"source":{"file":"users.js","line":40}}],"changes":{"added":["PATCH /users/:id"],"changed":["POST /users"],"removed":[{"key":"DELETE /users/:id","title":"Удалить пользователя"}]}}]}</script>
+<script>(function () {
+  'use strict';
+
+  var DATA = JSON.parse(document.getElementById('apiscribe-data').textContent);
+
+  var I18N = {
+    ru: {
+      search: 'Поиск...', overview: 'Обзор', changelog: 'История изменений', version: 'Версия',
+      header: 'Заголовки', path: 'Параметры пути', query: 'Query-параметры', body: 'Тело запроса', param: 'Параметры',
+      success: 'Успешный ответ', error: 'Ошибки', examples: 'Примеры', field: 'Поле', type: 'Тип',
+      description: 'Описание', required: 'обязательное', optional: 'необязательное', def: 'по умолчанию',
+      added: 'Добавлено', changed: 'Изменено', removed: 'Удалено', none: 'Изменений нет',
+      deprecated: 'Устарел', since: 'С версии', permissions: 'Доступ', source: 'Исходник',
+      presentIn: 'Есть в версиях', copy: 'Копировать', copied: 'Скопировано', endpoints: 'записей',
+      notFound: 'Этого элемента нет в выбранной версии.', initial: 'Первая версия', latest: 'последняя',
+      isNew: 'новое', isChanged: 'изменено', released: 'Дата', groups: 'Категории', noMatch: 'Ничего не найдено',
+      menu: 'Меню', returns: 'Возвращает', throws: 'Исключения', properties: 'Свойства', members: 'Содержимое',
+      name: 'Имя', open: 'открыть страницу'
+    },
+    en: {
+      search: 'Search...', overview: 'Overview', changelog: 'Changelog', version: 'Version',
+      header: 'Headers', path: 'Path parameters', query: 'Query parameters', body: 'Request body', param: 'Parameters',
+      success: 'Success response', error: 'Errors', examples: 'Examples', field: 'Field', type: 'Type',
+      description: 'Description', required: 'required', optional: 'optional', def: 'default',
+      added: 'Added', changed: 'Changed', removed: 'Removed', none: 'No changes',
+      deprecated: 'Deprecated', since: 'Since', permissions: 'Permissions', source: 'Source',
+      presentIn: 'Present in versions', copy: 'Copy', copied: 'Copied', endpoints: 'entries',
+      notFound: 'This item does not exist in the selected version.', initial: 'Initial version', latest: 'latest',
+      isNew: 'new', isChanged: 'changed', released: 'Date', groups: 'Categories', noMatch: 'Nothing found',
+      menu: 'Menu', returns: 'Returns', throws: 'Throws', properties: 'Properties', members: 'Contents',
+      name: 'Name', open: 'open page'
+    }
+  };
+  var T = I18N[DATA.lang] || I18N.en;
+
+  var versions = DATA.versions;
+  var latest = versions[versions.length - 1];
+  var state = { version: latest ? latest.version : '', key: '', query: '' };
+  var expanded = {}; // key -> true/false (ручное раскрытие узлов меню)
+  var closedCats = {};
+
+  /* ---------- helpers ---------- */
+
+  function add(e, c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) c.forEach(function (x) { add(e, x); });
+    else e.appendChild(c.nodeType ? c : document.createTextNode(String(c)));
+  }
+
+  function h(tag, attrs) {
+    var e = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (k) {
+        var v = attrs[k];
+        if (v == null || v === false) return;
+        if (k === 'class') e.className = v;
+        else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+        else e.setAttribute(k, v === true ? '' : v);
+      });
+    }
+    for (var i = 2; i < arguments.length; i++) add(e, arguments[i]);
+    return e;
+  }
+
+  function byVersion(v) {
+    for (var i = 0; i < versions.length; i++) if (versions[i].version === v) return versions[i];
+    return null;
+  }
+
+  function findEp(v, key) {
+    for (var i = 0; i < v.endpoints.length; i++) if (v.endpoints[i].key === key) return v.endpoints[i];
+    return null;
+  }
+
+  function hashFor(version, key) {
+    return '#/' + encodeURIComponent(version) + (key ? '/' + encodeURIComponent(key) : '');
+  }
+
+  function parseHash() {
+    var s = location.hash.replace(/^#\/?/, '');
+    if (!s) return {};
+    var p = s.split('/');
+    return { version: decodeURIComponent(p[0] || ''), key: p[1] ? decodeURIComponent(p[1]) : '' };
+  }
+
+  /* ---------- текст: inline-разметка и мини-markdown ---------- */
+
+  function inline(s) {
+    return String(s).split(/(`[^`]+`|\*\*[^*]+\*\*)/).map(function (x) {
+      if (/^`[^`]+`$/.test(x)) return h('code', null, x.slice(1, -1));
+      if (/^\*\*[^*]+\*\*$/.test(x)) return h('strong', null, x.slice(2, -2));
+      return x;
+    });
+  }
+
+  function inlineLines(lines) {
+    var out = [];
+    lines.forEach(function (l, i) {
+      if (i) out.push(h('br'));
+      out.push(inline(l.trim()));
+    });
+    return out;
+  }
+
+  // абзацы, списки, блоки кода ```...```, `код`, **жирный**; переносы строк сохраняются
+  function rich(text, cls) {
+    var box = h('div', { class: 'rich' + (cls ? ' ' + cls : '') });
+    var lines = String(text || '').split('\n');
+    var para = [];
+    var list = null;
+    var i = 0;
+
+    function flushPara() {
+      if (para.length) box.appendChild(h('p', null, inlineLines(para)));
+      para = [];
+    }
+    function flushList() {
+      if (list) {
+        box.appendChild(h(list.ordered ? 'ol' : 'ul', null, list.items.map(function (it) {
+          return h('li', null, inline(it));
+        })));
+      }
+      list = null;
+    }
+
+    while (i < lines.length) {
+      var l = lines[i];
+      if (/^\s*```/.test(l)) {
+        flushPara(); flushList();
+        var buf = [];
+        i++;
+        while (i < lines.length && !/^\s*```/.test(lines[i])) { buf.push(lines[i]); i++; }
+        i++;
+        box.appendChild(h('pre', { class: 'md-pre' }, h('code', null, buf.join('\n'))));
+        continue;
+      }
+      if (!l.trim()) { flushPara(); flushList(); i++; continue; }
+      var bm = l.match(/^\s*[-*]\s+(.*)$/);
+      var om = l.match(/^\s*\d+[.)]\s+(.*)$/);
+      if (bm || om) {
+        flushPara();
+        var ord = !!om;
+        if (list && list.ordered !== ord) flushList();
+        if (!list) list = { ordered: ord, items: [] };
+        list.items.push((bm || om)[1]);
+        i++;
+        continue;
+      }
+      flushList();
+      para.push(l);
+      i++;
+    }
+    flushPara(); flushList();
+    return box;
+  }
+
+  function firstLine(text) {
+    var t = String(text || '').trim();
+    if (!t || /^```/.test(t)) return '';
+    var s = t.split(/\n\s*\n/)[0].replace(/\s*\n\s*/g, ' ').replace(/[`*]/g, '');
+    return s.length > 140 ? s.slice(0, 137) + '...' : s;
+  }
+
+  function copyText(text, btn) {
+    function done() {
+      btn.textContent = T.copied;
+      setTimeout(function () { btn.textContent = T.copy; }, 1200);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () {});
+      return;
+    }
+    var ta = h('textarea', { style: 'position:fixed;opacity:0' });
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function statusOf(v, key) {
+    if (!v.changes) return '';
+    if (v.changes.added.indexOf(key) >= 0) return 'add';
+    if (v.changes.changed.indexOf(key) >= 0) return 'chg';
+    return '';
+  }
+
+  /* ---------- иерархия: категория -> группа (api.game) -> метод (api.game.show) ---------- */
+
+  function prep(v) {
+    if (v._p) return v._p;
+    var byKey = {};
+    var byPath = {};
+    var kids = {};
+    var parent = {};
+    v.endpoints.forEach(function (e) {
+      byKey[e.key] = e;
+      if (e.doc) byPath[e.group + '\u0000' + e.path] = e;
+    });
+    v.endpoints.forEach(function (e) {
+      if (!e.doc) return;
+      var parts = e.path.split('.');
+      for (var i = parts.length - 1; i >= 1; i--) {
+        var c = byPath[e.group + '\u0000' + parts.slice(0, i).join('.')];
+        if (c) {
+          parent[e.key] = c.key;
+          (kids[c.key] = kids[c.key] || []).push(e);
+          break;
+        }
+      }
+    });
+    v._p = { byKey: byKey, kids: kids, parent: parent };
+    return v._p;
+  }
+
+  function descendants(P, ep) {
+    var out = [];
+    (P.kids[ep.key] || []).forEach(function (k) {
+      out.push(k);
+      descendants(P, k).forEach(function (d) { out.push(d); });
+    });
+    return out;
+  }
+
+  function ancestors(P, ep) {
+    var out = [];
+    var p = P.parent[ep.key];
+    while (p) {
+      var pe = P.byKey[p];
+      out.unshift(pe);
+      p = P.parent[pe.key];
+    }
+    return out;
+  }
+
+  function dispKind(P, ep) {
+    if (ep.doc && ep.method === 'PROP' && P.kids[ep.key]) return 'NS';
+    return ep.method;
+  }
+
+  function labelOf(P, ep) {
+    if (!ep.doc) return ep.title || ep.path;
+    var p = P.parent[ep.key];
+    var base = ep.path;
+    if (p) base = ep.path.slice(P.byKey[p].path.length + 1);
+    return base + (ep.sig || '');
+  }
+
+  function badge(kind) {
+    return h('span', { class: 'method m-' + kind }, kind);
+  }
+
+  /* ---------- каркас ---------- */
+
+  var app = document.getElementById('app');
+  var nav = h('div', { class: 'nav' });
+  var main = h('main', { class: 'main' });
+  var select = h('select', { onchange: function () {
+    var nv = byVersion(select.value);
+    var k = state.key;
+    if (k && k !== '~changelog' && !(nv && findEp(nv, k))) k = '';
+    location.hash = hashFor(select.value, k);
+  } });
+  var search = h('input', { type: 'search', placeholder: T.search, oninput: function () {
+    state.query = search.value.trim().toLowerCase();
+    renderNav();
+  } });
+
+  versions.slice().reverse().forEach(function (v) {
+    select.appendChild(h('option', { value: v.version }, T.version + ' ' + v.version + (v === latest ? ' (' + T.latest + ')' : '')));
+  });
+
+  var side = h('aside', { class: 'side' }, h('div', { class: 'brand' }, DATA.title), select, search, nav);
+  var topbar = h('div', { class: 'topbar' },
+    h('button', { type: 'button', onclick: function () { document.body.classList.toggle('nav-open'); } }, T.menu),
+    h('strong', null, DATA.title));
+  app.appendChild(topbar);
+  app.appendChild(h('div', { class: 'layout' }, side, main));
+
+  /* ---------- меню ---------- */
+
+  function navLink(href, active, kids, title) {
+    return h('a', { class: 'item' + (active ? ' active' : ''), href: href, title: title || null,
+      onclick: function () { document.body.classList.remove('nav-open'); } }, kids);
+  }
+
+  function navRow(v, P, ep, flat) {
+    var st = statusOf(v, ep.key);
+    return navLink(hashFor(v.version, ep.key), state.key === ep.key, [
+      badge(dispKind(P, ep)),
+      h('span', { class: 'label' + (ep.deprecated ? ' dep' : '') }, flat ? (ep.title || ep.path) : labelOf(P, ep)),
+      st ? h('span', { class: 'dot ' + st, title: st === 'add' ? T.isNew : T.isChanged }) : null
+    ], ep.title || ep.path);
+  }
+
+  function navNode(v, P, ep, openSet) {
+    var kids = P.kids[ep.key] || [];
+    if (!kids.length) return h('div', { class: 'nnode' }, h('div', { class: 'nrow' }, h('span', { class: 'chev-sp' }), navRow(v, P, ep, false)));
+
+    var open = expanded.hasOwnProperty(ep.key) ? expanded[ep.key] : !!openSet[ep.key];
+    var chev = h('button', { class: 'chev' + (open ? ' open' : ''), type: 'button', 'aria-label': 'toggle',
+      onclick: function (e) {
+        e.preventDefault();
+        expanded[ep.key] = !open;
+        renderNav();
+      } }, '▸');
+    return h('div', { class: 'nnode' },
+      h('div', { class: 'nrow' }, chev, navRow(v, P, ep, false)),
+      open ? h('div', { class: 'nkids' }, kids.map(function (k) { return navNode(v, P, k, openSet); })) : null);
+  }
+
+  function renderNav() {
+    var v = byVersion(state.version);
+    nav.textContent = '';
+    if (!v) return;
+    var P = prep(v);
+
+    nav.appendChild(h('div', { class: 'top' },
+      navLink(hashFor(v.version, ''), !state.key, [h('span', { class: 'label' }, T.overview)]),
+      navLink(hashFor(v.version, '~changelog'), state.key === '~changelog', [h('span', { class: 'label' }, T.changelog)])));
+
+    var q = state.query;
+    var groups = {};
+    var order = [];
+    function put(ep) {
+      if (!groups[ep.group]) { groups[ep.group] = []; order.push(ep.group); }
+      groups[ep.group].push(ep);
+    }
+
+    var openSet = {};
+    var active = state.key && P.byKey[state.key];
+    if (active) {
+      openSet[active.key] = true;
+      ancestors(P, active).forEach(function (a) { openSet[a.key] = true; });
+    }
+
+    if (q) {
+      v.endpoints.forEach(function (ep) {
+        if ((ep.title + ' ' + ep.path + ' ' + ep.method + ' ' + ep.group).toLowerCase().indexOf(q) >= 0) put(ep);
+      });
+    } else {
+      v.endpoints.forEach(function (ep) { if (!P.parent[ep.key]) put(ep); });
+    }
+
+    if (!order.length) nav.appendChild(h('p', { class: 'muted', style: 'padding:6px 8px' }, T.noMatch));
+
+    order.forEach(function (g) {
+      var det = h('details', { open: !closedCats[g] || !!q }, h('summary', null, g));
+      det.addEventListener('toggle', function () { if (!q) closedCats[g] = !det.open; });
+      groups[g].forEach(function (ep) {
+        det.appendChild(q ? h('div', { class: 'nnode' }, h('div', { class: 'nrow' }, navRow(v, P, ep, true))) : navNode(v, P, ep, openSet));
+      });
+      nav.appendChild(det);
+    });
+  }
+
+  /* ---------- содержимое ---------- */
+
+  function link(v, key, title) {
+    return h('a', { href: hashFor(v.version, key) }, h('code', null, key), title && title !== key ? ' — ' + title : '');
+  }
+
+  function changeBlock(v) {
+    var c = v.changes;
+    if (!c) return h('p', { class: 'muted' }, T.initial + ': ' + v.endpoints.length + ' ' + T.endpoints);
+    if (!c.added.length && !c.changed.length && !c.removed.length) return h('p', { class: 'muted' }, T.none);
+    function list(title, cls, items) {
+      if (!items.length) return null;
+      return [h('h3', { class: cls }, title + ' (' + items.length + ')'),
+        h('ul', { class: cls }, items.map(function (i) { return h('li', null, i); }))];
+    }
+    function titleOf(key) { var e = findEp(v, key); return e ? e.title : ''; }
+    return h('div', { class: 'changes' },
+      list(T.added, 'add', c.added.map(function (k) { return link(v, k, titleOf(k)); })),
+      list(T.changed, 'chg', c.changed.map(function (k) { return link(v, k, titleOf(k)); })),
+      list(T.removed, 'rem', c.removed.map(function (r) { return h('span', null, h('code', null, r.key), r.title && r.title !== r.key ? ' — ' + r.title : ''); })));
+  }
+
+  function viewOverview(v) {
+    var P = prep(v);
+    var root = h('div', null);
+    root.appendChild(h('h1', null, DATA.title));
+    root.appendChild(h('p', { class: 'muted' },
+      T.version + ' ' + v.version + ' · ' + T.released + ' ' + (v.date || '') + ' · ' + v.endpoints.length + ' ' + T.endpoints));
+    root.appendChild(h('h2', null, T.changelog + ' ' + v.version));
+    root.appendChild(changeBlock(v));
+    root.appendChild(h('h2', null, T.groups));
+    var groups = {};
+    var order = [];
+    v.endpoints.forEach(function (ep) {
+      if (P.parent[ep.key]) return;
+      if (!groups[ep.group]) { groups[ep.group] = []; order.push(ep.group); }
+      groups[ep.group].push(ep);
+    });
+    order.forEach(function (g) {
+      root.appendChild(h('div', { class: 'card' }, h('strong', null, g),
+        h('div', { style: 'margin-top:8px' }, groups[g].map(function (ep) {
+          var sum = firstLine(ep.description);
+          return h('div', { style: 'margin:5px 0' },
+            badge(dispKind(P, ep)), ' ',
+            h('a', { href: hashFor(v.version, ep.key) }, ep.doc ? h('code', null, ep.title) : (ep.title || ep.path)),
+            ep.doc ? null : [' ', h('code', null, ep.path)],
+            sum ? h('span', { class: 'muted' }, ' — ' + sum) : null);
+        }))));
+    });
+    return root;
+  }
+
+  function viewChangelog() {
+    var root = h('div', null, h('h1', null, T.changelog));
+    versions.slice().reverse().forEach(function (v) {
+      root.appendChild(h('h2', null, v.version, ' ', h('span', { class: 'muted', style: 'font-weight:400;font-size:13px' }, v.date || '')));
+      root.appendChild(changeBlock(v));
+    });
+    return root;
+  }
+
+  function fieldsTable(fields, isParam) {
+    return h('table', { class: 'fields' },
+      h('thead', null, h('tr', null, h('th', null, T.field), h('th', null, T.type), h('th', null, T.description))),
+      h('tbody', null, fields.map(function (f) {
+        var depth = (f.name.match(/\./g) || []).length;
+        return h('tr', null,
+          h('td', null, h('span', { style: depth ? 'margin-left:' + depth * 14 + 'px' : null }, h('code', null, f.name)), ' ',
+            f.optional ? h('span', { class: 'tag' }, T.optional) : (isParam ? h('span', { class: 'tag req' }, T.required) : null)),
+          h('td', null, f.type ? h('code', null, f.type) : ''),
+          h('td', null, rich(f.description, 'cell'),
+            f['default'] !== undefined ? h('div', { class: 'muted' }, T.def + ': ', h('code', null, f['default'])) : null));
+      })));
+  }
+
+  function groupBy(fields, fallback) {
+    var order = [];
+    var map = {};
+    fields.forEach(function (f) {
+      var g = f.group || fallback;
+      if (!map.hasOwnProperty(g)) { map[g] = []; order.push(g); }
+      map[g].push(f);
+    });
+    return order.map(function (g) { return { group: g, fields: map[g] }; });
+  }
+
+  function exampleBlock(ex) {
+    var btn = h('button', { class: 'copy', type: 'button', onclick: function () { copyText(ex.content, btn); } }, T.copy);
+    return h('div', { class: 'example' },
+      h('div', { class: 'ex-head' },
+        h('span', { class: 'grow' }, ex.title || ex.type || ''),
+        ex.title && ex.type ? h('span', { class: 'tag' }, ex.type) : null, btn),
+      h('pre', null, h('code', null, ex.content)));
+  }
+
+  function section(title, content, tag) {
+    var frag = document.createDocumentFragment();
+    frag.appendChild(h(tag || 'h2', null, title));
+    add(frag, content);
+    return frag;
+  }
+
+  function metaTags(v, ep) {
+    var st = statusOf(v, ep.key);
+    var tags = [];
+    if (st) tags.push(h('span', { class: 'tag ' + st }, st === 'add' ? T.isNew : T.isChanged));
+    if (ep.deprecated) tags.push(h('span', { class: 'tag dep' }, T.deprecated + (ep.deprecated !== true ? ': ' + ep.deprecated : '')));
+    if (ep.since) tags.push(h('span', { class: 'tag' }, T.since + ' ' + ep.since));
+    if (ep.type) tags.push(h('span', { class: 'tag' }, T.type + ': ' + ep.type));
+    ep.permissions.forEach(function (p) { tags.push(h('span', { class: 'tag' }, T.permissions + ': ' + p)); });
+    return tags.length ? h('div', { class: 'tags' }, tags) : null;
+  }
+
+  // Тело записи (без заголовка). sub — уровень подзаголовков, footer — версии и исходник.
+  function endpointBody(v, ep, sub, footer) {
+    var out = document.createDocumentFragment();
+    add(out, metaTags(v, ep));
+    if (ep.description) out.appendChild(rich(ep.description));
+
+    ['header', 'path', 'query', 'body', 'param'].forEach(function (g) {
+      if (ep.params[g] && ep.params[g].length) out.appendChild(section(T[g], fieldsTable(ep.params[g], true), sub));
+    });
+    if (ep.properties && ep.properties.length) out.appendChild(section(T.properties, fieldsTable(ep.properties, false), sub));
+
+    if (ep.returns) {
+      out.appendChild(section(T.returns, [
+        ep.returns.type ? h('code', null, ep.returns.type) : null,
+        ep.returns.description ? rich(ep.returns.description) : null
+      ], sub));
+    }
+    if (ep.throws && ep.throws.length) {
+      out.appendChild(section(T.throws, ep.throws.map(function (x) {
+        return h('div', { style: 'margin:6px 0' },
+          x.type ? h('code', null, x.type) : null, x.type && x.description ? ' — ' : null, inline(x.description));
+      }), sub));
+    }
+    if (ep.examples.length) out.appendChild(section(T.examples, ep.examples.map(exampleBlock), sub));
+
+    if (ep.success.length || ep.successExamples.length) {
+      var s = [];
+      groupBy(ep.success, '200').forEach(function (g) {
+        s.push(h('h3', null, g.group), fieldsTable(g.fields, false));
+      });
+      s.push(ep.successExamples.map(exampleBlock));
+      out.appendChild(section(T.success, s, sub));
+    }
+    if (ep.error.length || ep.errorExamples.length) {
+      var er = [];
+      groupBy(ep.error, '').forEach(function (g) {
+        if (g.group) er.push(h('h3', null, g.group));
+        er.push(fieldsTable(g.fields, false));
+      });
+      er.push(ep.errorExamples.map(exampleBlock));
+      out.appendChild(section(T.error, er, sub));
+    }
+
+    if (footer) out.appendChild(footerBlock(v, ep, sub));
+    return out;
+  }
+
+  // Версии, в которых есть запись, и ссылка на исходник
+  function footerBlock(v, ep, sub) {
+    var out = document.createDocumentFragment();
+    var present = versions.filter(function (x) { return findEp(x, ep.key); });
+    if (present.length > 1) {
+      out.appendChild(section(T.presentIn, h('div', { class: 'vlist' }, present.slice().reverse().map(function (x) {
+        return h('a', { class: x === v ? 'cur' : '', href: hashFor(x.version, ep.key) }, x.version);
+      })), sub));
+    }
+    if (ep.source && ep.source.file) {
+      out.appendChild(h('div', { class: 'source' }, T.source + ': ', h('code', null, ep.source.file + (ep.source.line ? ':' + ep.source.line : ''))));
+    }
+    return out;
+  }
+
+  function crumbs(v, P, ep) {
+    var chain = ancestors(P, ep);
+    var root = chain.length ? chain[0] : ep;
+    var parts = root.path === ep.group ? [] : [h('span', null, ep.group), ' › '];
+    chain.forEach(function (a, i) {
+      if (i) parts.push(' › ');
+      parts.push(h('a', { href: hashFor(v.version, a.key) }, a.path));
+    });
+    if (chain.length) parts.push(' › ');
+    parts.push(h('strong', null, ep.path));
+    return h('div', { class: 'crumbs' }, parts);
+  }
+
+  // Страница одного элемента: метод, свойство, событие или HTTP-маршрут
+  function viewEndpoint(v, ep) {
+    var P = prep(v);
+    var root = h('article', null);
+    if (ep.doc) {
+      root.appendChild(crumbs(v, P, ep));
+      root.appendChild(h('h1', { class: 'doc-h1' }, badge(dispKind(P, ep)), ' ', h('code', { class: 'sig' }, ep.title)));
+    } else {
+      root.appendChild(h('h1', null, ep.title || ep.path));
+      root.appendChild(h('div', { class: 'urlbar' }, badge(ep.method), h('code', null, ep.path)));
+    }
+    root.appendChild(endpointBody(v, ep, 'h2', true));
+    return root;
+  }
+
+  // Страница группы (например api.game): описание группы + все её члены подряд
+  function viewGroup(v, ep) {
+    var P = prep(v);
+    var members = descendants(P, ep);
+    var root = h('article', null);
+    root.appendChild(crumbs(v, P, ep));
+    root.appendChild(h('h1', { class: 'doc-h1' }, badge(dispKind(P, ep)), ' ', h('code', { class: 'sig' }, ep.title)));
+    root.appendChild(endpointBody(v, ep, 'h2', false));
+
+    root.appendChild(h('h2', null, T.members + ' (' + members.length + ')'));
+    root.appendChild(h('table', { class: 'fields members' },
+      h('thead', null, h('tr', null, h('th', null, T.name), h('th', null, T.description))),
+      h('tbody', null, members.map(function (m) {
+        return h('tr', null,
+          h('td', null, badge(dispKind(P, m)), ' ',
+            h('a', { href: hashFor(v.version, m.key) }, h('code', null, m.path + (m.sig || '')))),
+          h('td', null, firstLine(m.description)));
+      }))));
+
+    members.forEach(function (m) {
+      var box = h('section', { class: 'member' });
+      box.appendChild(h('h2', { class: 'member-h' }, badge(dispKind(P, m)), ' ',
+        h('code', { class: 'sig' }, m.title),
+        h('a', { class: 'permalink', href: hashFor(v.version, m.key), title: T.open }, '↗')));
+      box.appendChild(endpointBody(v, m, 'h3', false));
+      root.appendChild(box);
+    });
+
+    root.appendChild(footerBlock(v, ep, 'h2'));
+    return root;
+  }
+
+  function viewItem(v, ep) {
+    var P = prep(v);
+    return P.kids[ep.key] ? viewGroup(v, ep) : viewEndpoint(v, ep);
+  }
+
+  function renderMain() {
+    var v = byVersion(state.version);
+    main.textContent = '';
+    if (!v) {
+      main.appendChild(h('h1', null, DATA.title));
+      return;
+    }
+    var view;
+    if (state.key === '~changelog') {
+      view = viewChangelog();
+    } else if (state.key) {
+      var ep = findEp(v, state.key);
+      view = ep ? viewItem(v, ep) : h('div', null, h('h1', null, state.key), h('p', { class: 'muted' }, T.notFound),
+        h('p', null, h('a', { href: hashFor(v.version, '') }, T.overview)));
+    } else {
+      view = viewOverview(v);
+    }
+    main.appendChild(view);
+    window.scrollTo(0, 0);
+  }
+
+  function route() {
+    var p = parseHash();
+    var v = byVersion(p.version) || latest;
+    state.version = v ? v.version : '';
+    state.key = byVersion(p.version) ? (p.key || '') : '';
+    select.value = state.version;
+    document.title = DATA.title + (state.key && state.key !== '~changelog' ? ' — ' + state.key : '');
+    renderNav();
+    renderMain();
+  }
+
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+</body>
+</html>

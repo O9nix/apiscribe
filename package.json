@@ -1,0 +1,45 @@
+{
+  "name": "apiscribe",
+  "version": "0.4.0",
+  "description": "Generate versioned API docs (HTML + Markdown) and a roadmap page from JSDoc-style comments. Zero dependencies.",
+  "bin": {
+    "apiscribe": "bin/apiscribe.js"
+  },
+  "main": "src/index.js",
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node test/smoke.js",
+    "prepublishOnly": "node scripts/check-publish.js && npm test"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "api",
+    "documentation",
+    "docs",
+    "jsdoc",
+    "apidoc",
+    "generator",
+    "markdown",
+    "roadmap",
+    "changelog",
+    "versioning"
+  ],
+  "license": "MIT",
+  "author": "O9nix",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/apiscribe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OWNER/apiscribe/issues"
+  },
+  "homepage": "https://github.com/OWNER/apiscribe#readme"
+}

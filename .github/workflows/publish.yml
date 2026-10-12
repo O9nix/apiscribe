@@ -1,0 +1,30 @@
+name: Publish to npm
+
+# Запускается, когда на GitHub создаётся Release (тег вида v0.4.0).
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write   # нужно для npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Тег релиза должен совпадать с версией в package.json
+        run: |
+          V="v$(node -p "require('./package.json').version")"
+          if [ "$V" != "$GITHUB_REF_NAME" ]; then
+            echo "Тег $GITHUB_REF_NAME не совпадает с версией пакета $V"; exit 1
+          fi
+      - run: npm test
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

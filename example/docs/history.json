@@ -1,0 +1,595 @@
+{
+  "schema": 1,
+  "title": "Example API",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-07",
+      "updatedAt": "2026-10-07T02:19:02.139Z",
+      "endpoints": [
+        {
+          "key": "GET /orders",
+          "method": "GET",
+          "path": "/orders",
+          "title": "Список заказов",
+          "group": "Orders",
+          "description": "",
+          "since": null,
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [],
+            "query": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "limit",
+                "optional": true,
+                "description": "Сколько заказов вернуть",
+                "default": "20"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "status",
+                "optional": true,
+                "description": "Фильтр по статусу"
+              }
+            ],
+            "body": [],
+            "param": []
+          },
+          "success": [
+            {
+              "group": null,
+              "type": "Object[]",
+              "name": "orders",
+              "optional": false,
+              "description": "Список заказов"
+            },
+            {
+              "group": null,
+              "type": "Number",
+              "name": "orders.id",
+              "optional": false,
+              "description": "Идентификатор заказа"
+            }
+          ],
+          "error": [],
+          "examples": [],
+          "successExamples": [
+            {
+              "type": "json",
+              "title": "Успех",
+              "content": "{ \"orders\": [ { \"id\": 10 } ] }"
+            }
+          ],
+          "errorExamples": [],
+          "source": {
+            "file": "orders.py",
+            "line": 3
+          }
+        },
+        {
+          "key": "POST /users",
+          "method": "POST",
+          "path": "/users",
+          "title": "Создать пользователя",
+          "group": "Users",
+          "description": "",
+          "since": null,
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [],
+            "query": [],
+            "body": [
+              {
+                "group": null,
+                "type": "String",
+                "name": "name",
+                "optional": false,
+                "description": "Имя"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "email",
+                "optional": false,
+                "description": "Почта"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "role",
+                "optional": true,
+                "description": "Роль",
+                "default": "user"
+              }
+            ],
+            "param": []
+          },
+          "success": [
+            {
+              "group": "201",
+              "type": "Number",
+              "name": "id",
+              "optional": false,
+              "description": "Идентификатор нового пользователя"
+            }
+          ],
+          "error": [
+            {
+              "group": "400",
+              "type": "",
+              "name": "ValidationError",
+              "optional": false,
+              "description": "Неверные данные"
+            }
+          ],
+          "examples": [],
+          "successExamples": [],
+          "errorExamples": [],
+          "source": {
+            "file": "users.js",
+            "line": 28
+          }
+        },
+        {
+          "key": "DELETE /users/:id",
+          "method": "DELETE",
+          "path": "/users/:id",
+          "title": "Удалить пользователя",
+          "group": "Users",
+          "description": "",
+          "since": null,
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "id",
+                "optional": false,
+                "description": "Идентификатор пользователя"
+              }
+            ],
+            "query": [],
+            "body": [],
+            "param": []
+          },
+          "success": [
+            {
+              "group": "204",
+              "type": "null",
+              "name": "-",
+              "optional": false,
+              "description": "Пустой ответ"
+            }
+          ],
+          "error": [
+            {
+              "group": "404",
+              "type": "",
+              "name": "UserNotFound",
+              "optional": false,
+              "description": "Пользователь с таким `id` не найден"
+            }
+          ],
+          "examples": [],
+          "successExamples": [],
+          "errorExamples": [
+            {
+              "type": "json",
+              "title": "Ответ 404",
+              "content": "{ \"error\": \"UserNotFound\" }"
+            }
+          ],
+          "source": {
+            "file": "users.js",
+            "line": 39
+          }
+        },
+        {
+          "key": "GET /users/:id",
+          "method": "GET",
+          "path": "/users/:id",
+          "title": "Получить пользователя",
+          "group": "Users",
+          "description": "Возвращает профиль пользователя по идентификатору.\n\nПоле `email` доступно только владельцу профиля.",
+          "since": null,
+          "deprecated": null,
+          "permissions": [
+            "user"
+          ],
+          "params": {
+            "header": [
+              {
+                "group": null,
+                "type": "String",
+                "name": "Authorization",
+                "optional": false,
+                "description": "Bearer-токен"
+              }
+            ],
+            "path": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "id",
+                "optional": false,
+                "description": "Идентификатор пользователя"
+              }
+            ],
+            "query": [],
+            "body": [],
+            "param": []
+          },
+          "success": [
+            {
+              "group": null,
+              "type": "Number",
+              "name": "id",
+              "optional": false,
+              "description": "Идентификатор"
+            },
+            {
+              "group": null,
+              "type": "String",
+              "name": "name",
+              "optional": false,
+              "description": "Имя"
+            },
+            {
+              "group": null,
+              "type": "String",
+              "name": "email",
+              "optional": true,
+              "description": "Почта"
+            }
+          ],
+          "error": [
+            {
+              "group": "404",
+              "type": "",
+              "name": "UserNotFound",
+              "optional": false,
+              "description": "Пользователь с таким `id` не найден"
+            }
+          ],
+          "examples": [
+            {
+              "type": "curl",
+              "title": "Пример запроса",
+              "content": "curl -H \"Authorization: Bearer TOKEN\" http://localhost:3000/users/1"
+            }
+          ],
+          "successExamples": [
+            {
+              "type": "json",
+              "title": "Успех",
+              "content": "{ \"id\": 1, \"name\": \"Анна\" }"
+            }
+          ],
+          "errorExamples": [
+            {
+              "type": "json",
+              "title": "Ответ 404",
+              "content": "{ \"error\": \"UserNotFound\" }"
+            }
+          ],
+          "source": {
+            "file": "users.js",
+            "line": 8
+          }
+        }
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-10-07",
+      "updatedAt": "2026-10-07T02:19:13.484Z",
+      "endpoints": [
+        {
+          "key": "GET /orders",
+          "method": "GET",
+          "path": "/orders",
+          "title": "Список заказов",
+          "group": "Orders",
+          "description": "",
+          "since": null,
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [],
+            "query": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "limit",
+                "optional": true,
+                "description": "Сколько заказов вернуть",
+                "default": "20"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "status",
+                "optional": true,
+                "description": "Фильтр по статусу"
+              }
+            ],
+            "body": [],
+            "param": []
+          },
+          "success": [
+            {
+              "group": null,
+              "type": "Object[]",
+              "name": "orders",
+              "optional": false,
+              "description": "Список заказов"
+            },
+            {
+              "group": null,
+              "type": "Number",
+              "name": "orders.id",
+              "optional": false,
+              "description": "Идентификатор заказа"
+            }
+          ],
+          "error": [],
+          "examples": [],
+          "successExamples": [
+            {
+              "type": "json",
+              "title": "Успех",
+              "content": "{ \"orders\": [ { \"id\": 10 } ] }"
+            }
+          ],
+          "errorExamples": [],
+          "source": {
+            "file": "orders.py",
+            "line": 3
+          }
+        },
+        {
+          "key": "POST /users",
+          "method": "POST",
+          "path": "/users",
+          "title": "Создать пользователя",
+          "group": "Users",
+          "description": "",
+          "since": null,
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [],
+            "query": [],
+            "body": [
+              {
+                "group": null,
+                "type": "String",
+                "name": "name",
+                "optional": false,
+                "description": "Имя"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "email",
+                "optional": false,
+                "description": "Почта"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "role",
+                "optional": true,
+                "description": "Роль",
+                "default": "user"
+              },
+              {
+                "group": null,
+                "type": "String",
+                "name": "phone",
+                "optional": true,
+                "description": "Телефон (добавлено в 1.1.0)"
+              }
+            ],
+            "param": []
+          },
+          "success": [
+            {
+              "group": "201",
+              "type": "Number",
+              "name": "id",
+              "optional": false,
+              "description": "Идентификатор нового пользователя"
+            }
+          ],
+          "error": [
+            {
+              "group": "400",
+              "type": "",
+              "name": "ValidationError",
+              "optional": false,
+              "description": "Неверные данные"
+            }
+          ],
+          "examples": [],
+          "successExamples": [],
+          "errorExamples": [],
+          "source": {
+            "file": "users.js",
+            "line": 28
+          }
+        },
+        {
+          "key": "GET /users/:id",
+          "method": "GET",
+          "path": "/users/:id",
+          "title": "Получить пользователя",
+          "group": "Users",
+          "description": "Возвращает профиль пользователя по идентификатору.\n\nПоле `email` доступно только владельцу профиля.",
+          "since": null,
+          "deprecated": null,
+          "permissions": [
+            "user"
+          ],
+          "params": {
+            "header": [
+              {
+                "group": null,
+                "type": "String",
+                "name": "Authorization",
+                "optional": false,
+                "description": "Bearer-токен"
+              }
+            ],
+            "path": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "id",
+                "optional": false,
+                "description": "Идентификатор пользователя"
+              }
+            ],
+            "query": [],
+            "body": [],
+            "param": []
+          },
+          "success": [
+            {
+              "group": null,
+              "type": "Number",
+              "name": "id",
+              "optional": false,
+              "description": "Идентификатор"
+            },
+            {
+              "group": null,
+              "type": "String",
+              "name": "name",
+              "optional": false,
+              "description": "Имя"
+            },
+            {
+              "group": null,
+              "type": "String",
+              "name": "email",
+              "optional": true,
+              "description": "Почта"
+            }
+          ],
+          "error": [
+            {
+              "group": "404",
+              "type": "",
+              "name": "UserNotFound",
+              "optional": false,
+              "description": "Пользователь с таким `id` не найден"
+            }
+          ],
+          "examples": [
+            {
+              "type": "curl",
+              "title": "Пример запроса",
+              "content": "curl -H \"Authorization: Bearer TOKEN\" http://localhost:3000/users/1"
+            }
+          ],
+          "successExamples": [
+            {
+              "type": "json",
+              "title": "Успех",
+              "content": "{ \"id\": 1, \"name\": \"Анна\" }"
+            }
+          ],
+          "errorExamples": [
+            {
+              "type": "json",
+              "title": "Ответ 404",
+              "content": "{ \"error\": \"UserNotFound\" }"
+            }
+          ],
+          "source": {
+            "file": "users.js",
+            "line": 8
+          }
+        },
+        {
+          "key": "PATCH /users/:id",
+          "method": "PATCH",
+          "path": "/users/:id",
+          "title": "Обновить пользователя",
+          "group": "Users",
+          "description": "",
+          "since": "1.1.0",
+          "deprecated": null,
+          "permissions": [],
+          "params": {
+            "header": [],
+            "path": [
+              {
+                "group": null,
+                "type": "Number",
+                "name": "id",
+                "optional": false,
+                "description": "Идентификатор пользователя"
+              }
+            ],
+            "query": [],
+            "body": [
+              {
+                "group": null,
+                "type": "String",
+                "name": "name",
+                "optional": true,
+                "description": "Новое имя"
+              }
+            ],
+            "param": []
+          },
+          "success": [
+            {
+              "group": null,
+              "type": "Number",
+              "name": "id",
+              "optional": false,
+              "description": "Идентификатор"
+            }
+          ],
+          "error": [
+            {
+              "group": "404",
+              "type": "",
+              "name": "UserNotFound",
+              "optional": false,
+              "description": "Пользователь с таким `id` не найден"
+            }
+          ],
+          "examples": [],
+          "successExamples": [],
+          "errorExamples": [
+            {
+              "type": "json",
+              "title": "Ответ 404",
+              "content": "{ \"error\": \"UserNotFound\" }"
+            }
+          ],
+          "source": {
+            "file": "users.js",
+            "line": 40
+          }
+        }
+      ]
+    }
+  ]
+}

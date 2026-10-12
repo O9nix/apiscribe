@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="__LANG__">
+<head>
+  <meta charset="UTF-8">
+  <meta name="generator" content="apiscribe __TOOL__">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__TITLE__</title>
+  <style>
+    :root {
+      --bg: #0f1114;
+      --surface: #161a1f;
+      --border: #2a3038;
+      --text: #e6e8eb;
+      --muted: #8b939e;
+      --accent: #c8d0d8;
+      --active: #3d7ea6;
+      --done: #4a6b4a;
+      --line: #2a3038;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 15px;
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 28px 32px 24px;
+      background: var(--surface);
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    header p { color: var(--muted); font-size: 13px; max-width: 640px; }
+
+    header .ver {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      color: var(--accent);
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      min-height: calc(100vh - 130px);
+    }
+
+    .timeline {
+      border-right: 1px solid var(--border);
+      padding: 24px 0 40px;
+      background: var(--surface);
+      overflow-y: auto;
+    }
+
+    .item {
+      position: relative;
+      padding: 0 20px 0 48px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+    }
+
+    .item + .item { margin-top: 2px; }
+
+    .item::before {
+      content: "";
+      position: absolute;
+      left: 23px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--line);
+    }
+
+    .item:first-child::before { top: 22px; }
+    .item:last-child::before { bottom: calc(100% - 22px); }
+
+    .item .dot {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      z-index: 1;
+    }
+
+    .item.current .dot {
+      border-color: var(--active);
+      background: var(--active);
+    }
+
+    .item.done .dot {
+      border-color: var(--done);
+      background: var(--done);
+    }
+
+    .item.active { background: var(--bg); }
+
+    .item.active .dot {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent);
+    }
+
+    .item-inner {
+      display: block;
+      padding: 12px 0 14px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .item:hover .item-inner { border-bottom-color: var(--border); }
+
+    .item .ver-label {
+      display: block;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .item.current .ver-label { color: var(--active); }
+
+    .item .title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .item.active .title { color: #fff; }
+
+    .detail {
+      padding: 36px 48px 60px;
+      overflow-y: auto;
+    }
+
+    .detail-empty {
+      color: var(--muted);
+      font-size: 14px;
+      padding-top: 40px;
+    }
+
+    .detail h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .detail .meta {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .detail .meta span { color: var(--accent); }
+
+    .detail .lead {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      max-width: 52em;
+    }
+
+    .detail h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin: 22px 0 10px;
+      font-weight: 600;
+    }
+
+    .detail ul {
+      list-style: none;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      max-width: 52em;
+    }
+
+    .detail ul li {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .detail ul li:last-child { border-bottom: none; }
+
+    .detail .sub {
+      margin-top: 4px;
+      padding-left: 12px;
+      border-left: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .detail .result {
+      margin-top: 20px;
+      max-width: 52em;
+      padding: 12px 14px;
+      border-left: 3px solid var(--active);
+      background: var(--surface);
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    .detail strong { color: #fff; font-weight: 600; }
+
+    .detail code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0 4px;
+    }
+
+    .detail a { color: var(--active); }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge.current {
+      border-color: var(--active);
+      color: var(--active);
+    }
+
+    .badge.done {
+      border-color: var(--done);
+      color: var(--done);
+    }
+
+    .layout-sketch {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      max-width: 52em;
+      font-size: 12px;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      color: var(--muted);
+      line-height: 1.35;
+      padding: 12px 14px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .hint {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 52em;
+    }
+
+    .hint code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      .timeline {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 40vh;
+      }
+      .detail { padding: 24px 20px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="h-title"></h1>
+    <p id="h-sub"></p>
+    <div class="ver" id="h-ver"></div>
+  </header>
+
+  <div class="layout">
+    <nav class="timeline" id="timeline"></nav>
+    <main class="detail" id="detail"></main>
+  </div>
+
+  <script type="application/json" id="roadmap-data">__DATA__</script>
+  <script>
+    (function () {
+      'use strict';
+      var D = JSON.parse(document.getElementById('roadmap-data').textContent);
+      var T = D.T;
+      var STEPS = D.steps;
+      var timeline = document.getElementById('timeline');
+      var detail = document.getElementById('detail');
+      timeline.setAttribute('aria-label', T.aria);
+
+      /* ---------- DOM-помощники (без innerHTML) ---------- */
+      function add(e, c) {
+        if (c == null || c === false) return;
+        if (Array.isArray(c)) c.forEach(function (x) { add(e, x); });
+        else e.appendChild(c.nodeType ? c : document.createTextNode(String(c)));
+      }
+      function h(tag, attrs) {
+        var e = document.createElement(tag);
+        if (attrs) Object.keys(attrs).forEach(function (k) {
+          var v = attrs[k];
+          if (v == null || v === false) return;
+          if (k === 'class') e.className = v;
+          else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+          else e.setAttribute(k, v === true ? '' : v);
+        });
+        for (var i = 2; i < arguments.length; i++) add(e, arguments[i]);
+        return e;
+      }
+
+      // `код`, **жирный**, [текст](ссылка); ссылки только http(s), mailto, относительные и #
+      function inline(s) {
+        var re = /(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)\s]+\))/;
+        return String(s).split(re).map(function (x) {
+          var m;
+          if (/^`[^`]+`$/.test(x)) return h('code', null, x.slice(1, -1));
+          if (/^\*\*[^*]+\*\*$/.test(x)) return h('strong', null, x.slice(2, -2));
+          m = x.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+          if (m && /^(https?:|mailto:|#|\.{0,2}\/)/i.test(m[2])) return h('a', { href: m[2], rel: 'noopener' }, m[1]);
+          return x;
+        });
+      }
+
+      function byHash() {
+        var v = decodeURIComponent(location.hash.replace(/^#/, ''));
+        for (var i = 0; i < STEPS.length; i++) if (STEPS[i].version === v) return i;
+        return -1;
+      }
+
+      function initialIndex() {
+        var i = byHash();
+        if (i >= 0) return i;
+        for (i = 0; i < STEPS.length; i++) if (STEPS[i].status === 'current') return i;
+        return 0;
+      }
+
+      var active = initialIndex();
+
+      /* ---------- шапка ---------- */
+      document.getElementById('h-title').textContent = D.title;
+      document.getElementById('h-sub').textContent = D.subtitle;
+      var ver = document.getElementById('h-ver');
+      ver.textContent = (D.current ? T.current + ': ' + D.current : T.unknown) + (D.versionFile ? ' · ' + D.versionFile : '');
+
+      /* ---------- этапы ---------- */
+      function statusClass(s) { return s === 'current' ? 'current' : s === 'done' ? 'done' : ''; }
+      function statusBadge(s) {
+        if (s === 'current') return h('span', { class: 'badge current' }, T.nowBadge);
+        if (s === 'done') return h('span', { class: 'badge done' }, T.doneBadge);
+        return null;
+      }
+
+      function renderTimeline() {
+        timeline.textContent = '';
+        STEPS.forEach(function (step, i) {
+          timeline.appendChild(h('button', {
+            type: 'button',
+            class: 'item ' + statusClass(step.status) + (i === active ? ' active' : ''),
+            onclick: function () { select(i); }
+          },
+            h('span', { class: 'dot', 'aria-hidden': 'true' }),
+            h('span', { class: 'item-inner' },
+              h('span', { class: 'ver-label' }, step.version),
+              h('span', { class: 'title' }, step.title))));
+        });
+      }
+
+      function renderItem(it) {
+        return h('li', null, inline(it.text), (it.sub || []).map(function (s) {
+          return h('div', { class: 'sub' }, inline(s));
+        }));
+      }
+
+      function renderDetail() {
+        detail.textContent = '';
+        var step = STEPS[active];
+        if (!step) {
+          detail.appendChild(h('p', { class: 'detail-empty' }, T.pick));
+          return;
+        }
+        add(detail, h('h2', null, inline(step.title), statusBadge(step.status)));
+        add(detail, h('p', { class: 'meta' }, T.version + ' ', h('span', null, step.version)));
+        if (step.lead) add(detail, h('p', { class: 'lead' }, inline(step.lead)));
+
+        step.sections.forEach(function (sec) {
+          add(detail, h('h3', null, sec.label || T.includes));
+          add(detail, h('ul', null, sec.items.map(renderItem)));
+        });
+        step.sketches.forEach(function (sk) {
+          add(detail, h('h3', null, sk.title || T.scheme));
+          add(detail, h('div', { class: 'layout-sketch' }, sk.text));
+        });
+        step.notes.forEach(function (n) { add(detail, h('p', { class: 'lead', style: 'margin-top:14px' }, inline(n))); });
+        if (step.result) add(detail, h('div', { class: 'result' }, inline(step.result)));
+
+        if (D.sourceName) {
+          add(detail, h('p', { class: 'hint' }, T.source + ': ', h('code', null, D.sourceName), '. ' + T.hint));
+        }
+      }
+
+      function select(i) {
+        active = i;
+        try { history.replaceState(null, '', '#' + encodeURIComponent(STEPS[i].version)); } catch (e) {}
+        renderTimeline();
+        renderDetail();
+        var a = timeline.querySelector('.item.active');
+        if (a && a.scrollIntoView && window.matchMedia && !window.matchMedia('(max-width: 720px)').matches) {
+          a.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      window.addEventListener('hashchange', function () {
+        var i = byHash();
+        if (i >= 0 && i !== active) { active = i; renderTimeline(); renderDetail(); }
+      });
+
+      renderTimeline();
+      renderDetail();
+    })();
+  </script>
+</body>
+</html>
